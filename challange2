@@ -73,17 +73,15 @@ while ($count <= $numservs) {
 	} while ($status == "BUILD");
 	
 //if the server is no longer in "BUILD" it should be ACTIVE, but we all know what happens when we assume...
-	if ($status!="ACTIVE")
-	{	
+	if ($status!="ACTIVE") {	
 		echo sprintf(
 			"ERROR Server state is %s!!",
 			$status
 		);
 		$count++;
 	}	
-	else 
-	{
-		$name = $servname$count;
+	else {
+		$name = "$servname$count";
 		$ip = $server->ip(4);
 		echo sprintf(
 			"Sever %s is complete! The root pass is %s, and the IP is %s",
