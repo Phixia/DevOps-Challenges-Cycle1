@@ -35,7 +35,7 @@ while (ctype_alnum($servname) == FALSE) {
 
 
 // Lets build our server/s, I am using static variables for flavor and image just to keep this easy
-$count = 1
+$count = 1;
 while ($count <= $numservs) {
 
 $name = "$servname$count";
@@ -55,18 +55,19 @@ ${"id$count"} = $server->id();
 //some output for the user
 printf("Building server $name now! \n");
 
-$count++
+$count++;
 
 }
 
-$count = 1
+$count = 1;
 
 while ($count <= $numservs) {
 // We need to wait for the server to be active to grab the IP;
 	do {
 		sleep(30);
 //the next line is going to pull the info fresh from the server object we created earlier (THIS IS IMPORTANT!!
-		$server = $compute->Server($id$count);
+		$id = "id$count";
+		$server = $compute->Server($id);
 		$status = $server->status();
 		printf("Still building...\n");
 	} while ($status == "BUILD");
@@ -78,9 +79,10 @@ while ($count <= $numservs) {
 			"ERROR Server state is %s!!",
 			$status
 		);
-		$count++
+		$count++;
 	}	
-	else {
+	else 
+	{
 		$name = $servname$count;
 		$ip = $server->ip(4);
 		echo sprintf(
@@ -89,7 +91,8 @@ while ($count <= $numservs) {
 			$pass$count,
 			$ip
 		);
-		$count++
-	}	
+		$count++;
+	}
+}	
 ?>
 
