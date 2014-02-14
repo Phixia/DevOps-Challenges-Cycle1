@@ -66,7 +66,7 @@ while ($count <= $numservs) {
 	do {
 		sleep(30);
 //the next line is going to pull the info fresh from the server object we created earlier (THIS IS IMPORTANT!!
-		$id = "id$count";
+		$id = ${"id$count"};
 		$server = $compute->Server($id);
 		$status = $server->status();
 		printf("Still building...\n");
@@ -82,11 +82,12 @@ while ($count <= $numservs) {
 	}	
 	else {
 		$name = "$servname$count";
+		$pass = ${"pass$count"};
 		$ip = $server->ip(4);
 		echo sprintf(
-			"Sever %s is complete! The root pass is %s, and the IP is %s",
+			"Sever %s is complete! The root pass is %s, and the IP is %s \n",
 			$name,
-			$pass$count,
+			$pass,
 			$ip
 		);
 		$count++;
