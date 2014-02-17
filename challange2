@@ -39,11 +39,14 @@ $count = 1;
 while ($count <= $numservs) {
 
 $name = "$servname$count";
-
+$pubkey = file_get_contents('./id_rsa.pub');
 $server->name = $name;
 $server->flavor = $compute->flavor(2);
-$server->image = $compute->image('bced783b-31d2-4637-b820-fa02522c518b');
+$server->image = $compute->image('f70ed7c7-b42e-4d77-83d8-40fa29825b85');
+$server->AddFile('/root/.ssh/authorized_keys',$pubkey);
 $server->create();
+
+
 
 // Now we need to grab some info that is populated during the create function
 

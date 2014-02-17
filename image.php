@@ -1,3 +1,4 @@
+#!/usr/bin/php
 <?php
 // First we need to include our auth script and some needed tools
 require_once('/usr/share/php/opencloud/lib/rackspace.php');
