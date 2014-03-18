@@ -12,7 +12,7 @@ $name = 'AndersTestNew';
 // Lets build our server, I am using static variables for flavor and image just to keep this easy
 $server->name = $name;
 $server->flavor = $compute->flavor(2);
-$server->image = $compute->image('bced783b-31d2-4637-b820-fa02522c518b');
+$server->image = $compute->image('b01aa33e-2563-4ee9-9c29-071852cb872c');
 $server->create();
 
 // Now we need to grab some info that is populated during the create function

@@ -11,6 +11,29 @@ $DNS = $RAX->DNS();
 $DNSList = $DNS->DomainList();
 $test = FALSE;
 
+//for the time being;
+//$ip = 0;
+//$ttl = 300;
+
+//this is to test if an ip is valid. We will use it later;
+function is_valid_ip($ip) {
+	return (filter_var($ip, FILTER_VALIDATE_IP));
+}
+//this is to test if a ttl is valid. We will use it later;
+function is_valid_ttl($ttl) {
+	return (filter_var($ttl, FILTER_VALIDATE_INT) //is it a number?
+		&& $ttl >= 300 
+		&& $ttl <= 86400);
+}
+
+//this is to test if a URL is valid. We will use it later;
+function is_valid_URL($fqdn) {
+	return (filter_var ($fqdn, FILTER_VALIDATE_URL));
+
+}
+
+
+
 // First we are going to list the current Domains
 echo ("Here is a list of your current Domain names \n \n");
 
@@ -24,29 +47,72 @@ echo ("Which of the above domains would you like to create an A record for? \n")
 $domain = trim(fgets(STDIN));
 
 // As always we need to make sure a cat did not walk accross the keyboard
+// We need to reset our array (or this magic won't work)
+$DNSList->reset();
+
+//var_dump ($DNSList);
 
 while (!$test) {
 	while ($Zone = $DNSList->Next()) {
-		echo ("this is a test \n");
 		if ($Zone->name === $domain) {
 			$test = TRUE;
 			break;
 		}
 		else {
-			var_dump($Zone->name);
 		}
 	}	
-
-var_dump($test);
-
 	if (!$test) {
 		echo "Please enter one of the domains above. \n";
 		$domain = trim(fgets(STDIN));
 	}
 }
 
-echo ($test);
-echo ($domain);
+echo ("Do you want add a subdomain onto $domain? y/N \n");
+$yesorno = trim(fgets(STDIN));
+
+if ($yesorno === "y"|"Y"|"yes"|"Yes"|"YES") {
+	echo ("Please enter the subdomain you would like to use. \n");
+	$subdomain = trim(fgets(STDIN));
+	$fqdn = $subdomain.$domain;
+	var_dump (is_valid_URL($fqdn));
+	while (!is_valid_URL($fqdn)) {
+		echo ("Please enter a valid subdomain, i.e. www \n");
+		$subdomain = trim(fgets(STDIN));
+	}
+}
+
+
+
+//Now that we have a Domain name we need to get our IP, TTL, and record TEXT.
+
+echo ("What IP are we going to use for our A record? \n");
+$ip = trim(fgets(STDIN));
+
+//keep an eye open for that pesky cat!
+while (!is_valid_ip($ip)) {
+	var_dump($is_ip);
+	echo ("Please enter a valid IP! \n");
+	$ip = trim(fgets(STDIN));
+}
+
+//On to TTL
+
+echo ("What would you like to set the TTL to? (in seconds, 300 being the minimum and 86400 being the maximum. \n)");
+$ttl = trim(fgets(STDIN));
+
+//Moar cats!
+while (!is_valid_ttl($ttl)) {
+	echo ("Please enter a valid TTL. \n");
+	$ttl = trim(fgets(STDIN));
+}
+
+echo ("$ip,$ttl,$fqdn");
+
+
+
+
+
+
 
 
 ?>
