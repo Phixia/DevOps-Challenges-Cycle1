@@ -11,10 +11,6 @@ $DNS = $RAX->DNS();
 $DNSList = $DNS->DomainList();
 $test = FALSE;
 
-//for the time being;
-//$ip = 0;
-//$ttl = 300;
-
 //this is to test if an ip is valid. We will use it later;
 function is_valid_ip($ip) {
 	return (filter_var($ip, FILTER_VALIDATE_IP));
@@ -28,9 +24,13 @@ function is_valid_ttl($ttl) {
 
 //this is to test if a URL is valid. We will use it later;
 function is_valid_URL($fqdn) {
-	return (filter_var ($fqdn, FILTER_VALIDATE_URL));
-
+//	return (filter_var($fqdn, FILTER_VALIDATE_URL));
+	//this function was stolen from Andrew Howard : P
+	return (preg_match("/^([a-z\d](-*[a-z\d])*)(\.([a-z\d](-*[a-z\d])*))*$/i", $fqdn) //valid chars check
+       	&& preg_match("/^.{1,253}$/", $fqdn) //overall length check
+       	&& preg_match("/^[^\.]{1,63}(\.[^\.]{1,63})*$/", $fqdn) ); //length of each label
 }
+
 
 
 
@@ -50,7 +50,6 @@ $domain = trim(fgets(STDIN));
 // We need to reset our array (or this magic won't work)
 $DNSList->reset();
 
-//var_dump ($DNSList);
 
 while (!$test) {
 	while ($Zone = $DNSList->Next()) {
@@ -64,6 +63,7 @@ while (!$test) {
 	if (!$test) {
 		echo "Please enter one of the domains above. \n";
 		$domain = trim(fgets(STDIN));
+		$DNSList->reset();
 	}
 }
 
@@ -73,46 +73,52 @@ $yesorno = trim(fgets(STDIN));
 if ($yesorno === "y"|"Y"|"yes"|"Yes"|"YES") {
 	echo ("Please enter the subdomain you would like to use. \n");
 	$subdomain = trim(fgets(STDIN));
-	$fqdn = $subdomain.$domain;
-	var_dump (is_valid_URL($fqdn));
+	$fqdn = "$subdomain.$domain";
 	while (!is_valid_URL($fqdn)) {
 		echo ("Please enter a valid subdomain, i.e. www \n");
 		$subdomain = trim(fgets(STDIN));
+		$fqdn = "$subdomain.$domain";
 	}
 }
 
-
-
-//Now that we have a Domain name we need to get our IP, TTL, and record TEXT.
+else {
+	$fqdn = $domain;
+}
+// Now that we have a Domain name we need to get our IP and TTL.
 
 echo ("What IP are we going to use for our A record? \n");
 $ip = trim(fgets(STDIN));
 
-//keep an eye open for that pesky cat!
+// Keep an eye open for that pesky cat!
 while (!is_valid_ip($ip)) {
 	var_dump($is_ip);
 	echo ("Please enter a valid IP! \n");
 	$ip = trim(fgets(STDIN));
 }
 
-//On to TTL
+// On to TTL
 
-echo ("What would you like to set the TTL to? (in seconds, 300 being the minimum and 86400 being the maximum. \n)");
+echo ("What would you like to set the TTL to? (in seconds, 300 being the minimum and 86400 being the maximum.) \n");
 $ttl = trim(fgets(STDIN));
 
-//Moar cats!
+// Moar cats!
 while (!is_valid_ttl($ttl)) {
 	echo ("Please enter a valid TTL. \n");
 	$ttl = trim(fgets(STDIN));
 }
 
-echo ("$ip,$ttl,$fqdn");
+// Now we can create our record
 
+$record = $Zone->Record();
+$record->name = "$fqdn";
+$record->type = "A";
+$record->ttl = $ttl;
+$record->data = $ip;
+$record->Create();
+$Zone->Update();
 
-
-
-
-
+echo "New A record for $fqdn has been created\n";
+echo "$fqdn IN A $ttl $ip \n";
 
 
 ?>
